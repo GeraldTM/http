@@ -1,4 +1,5 @@
 import socket, json, os
+from http.client import responses
 
 
 class TCPServer:
@@ -73,12 +74,34 @@ class HTTPServer(TCPServer):
 
             with open(filename, 'rb') as f:
                 response_body = f.read()
+                f.close()
         else:
             response_line = self.response_line(status_code=404)
             response_headers = self.response_headers()
             response_body = b"<h1>404 Not Found <br> <p> file "+filename.encode()+ b" not found </p>"
         blank_line = b"\r\n"
         return b"".join([response_line, response_headers, blank_line, response_body])
+
+    def handle_POST(self, request):
+        print(request.body)
+
+        if request.body == None:
+            response_line = self.response_line(status_code=400)
+        else:
+            try:
+                with open("messages.txt", "a") as f:
+                    f.write(request.body.decode())
+                    f.close()
+                    response_line = self.response_line(status_code=200)
+            except Exception as e:
+                print(e)
+                response_line = self.response_line(status_code=500)
+
+
+        response_headers = self.response_headers()
+        blank_line = b"\r\n"
+        return b"".join([response_line,response_headers,blank_line])
+
 
 
     def response_line(self, status_code):
@@ -104,10 +127,11 @@ class HTTPRequest:
         self.method = None
         self.uri = None
         self.http_version = "1.1"
-
+        self.body = None
         self.parse(data)
 
     def parse(self, data):
+        self.body = data.split(b"\r\n\r\n")[1]
         lines = data.split(b"\r\n")
         request_line = lines[0]
 
@@ -119,6 +143,8 @@ class HTTPRequest:
 
         if len(words) > 2:
             self.http_version = words[2]
+
+
 
 
 if __name__ == '__main__':
