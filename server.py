@@ -1,5 +1,4 @@
 import socket, json, os
-from http.client import responses
 
 
 class TCPServer:
