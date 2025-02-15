@@ -1,5 +1,6 @@
 import socket, json, os
 
+
 class TCPServer:
     def __init__(self, host='127.0.0.1', port=8888 ):
         self.host = host
@@ -61,6 +62,9 @@ class HTTPServer(TCPServer):
 
     def handle_GET(self, request):
         filename = request.uri.strip('/')
+
+        if filename == "":
+            filename = "index.html"
 
         if os.path.exists(filename):
             response_line = self.response_line(status_code=200)
