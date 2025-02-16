@@ -85,9 +85,7 @@ class HTTPServer(TCPServer):
         return b"".join([response_line, response_headers, blank_line, response_body])
 
     def handle_POST(self, request):
-        print(request.body)
-
-        if request.body is None:
+        if request.body =='':
             response_line = self.response_line(status_code=400)
             with open("log.txt", "a") as log:
                 log.write("Request or response not ok: " + response_line.decode() + " | request as follows: " + request.raw.decode())
@@ -154,8 +152,7 @@ class HTTPRequest:
 
         try:
             self.origin = list(filter(lambda x: b"Origin" in x, lines))
-            print(self.origin)
-            self.origin = self.origin[0].split(":")[1]
+            self.origin = self.origin[0].split(b":")[1]
         except ValueError and IndexError:
             pass
 
@@ -166,4 +163,3 @@ class HTTPRequest:
 if __name__ == '__main__':
     server = HTTPServer()
     server.start()
-
