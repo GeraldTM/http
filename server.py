@@ -85,7 +85,7 @@ class HTTPServer(TCPServer):
         return b"".join([response_line, response_headers, blank_line, response_body])
 
     def handle_POST(self, request):
-        if request.body =='':
+        if request.body == b'' or request.body == b'\r\n':
             response_line = self.response_line(status_code=400)
             with open("log.txt", "a") as log:
                 log.write("Request or response not ok: " + response_line.decode() + " | request as follows: " + request.raw.decode())
