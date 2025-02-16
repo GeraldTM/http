@@ -78,7 +78,7 @@ class HTTPServer(TCPServer):
         else:
             response_line = self.response_line(status_code=404)
             response_headers = self.response_headers()
-            response_body = b"<h1>404 Not Found <br> <p> file "+filename.encode()+ b" not found </p>"
+            response_body = b"<h1>404 Not Found</h1> <br> <p> file "+filename.encode()+ b" not found </p>"
             with open("log.txt", "a") as log:
                 log.write("Request or response not ok: " + response_line.decode() + " | request as follows: " + request.raw.decode())
         blank_line = b"\r\n"
