@@ -57,7 +57,8 @@ class HTTPServer(TCPServer):
         response_headers = self.response_headers()
         blank_line = b"\r\n"
         response_body = b"<h1> 501 Not Implemented </h1> <br> <p> This site has not implemented a response to "+request.method.encode()+b" requests </p>"
-
+        with open("log.txt", "a") as log:
+            log.write("Request or response not ok: " + response_line.decode() + " | request as follows: " + request.raw.decode())
         return b"".join([response_line, response_headers, blank_line, response_body])
 
     def handle_GET(self, request):
@@ -78,14 +79,18 @@ class HTTPServer(TCPServer):
             response_line = self.response_line(status_code=404)
             response_headers = self.response_headers()
             response_body = b"<h1>404 Not Found <br> <p> file "+filename.encode()+ b" not found </p>"
+            with open("log.txt", "a") as log:
+                log.write("Request or response not ok: " + response_line.decode() + " | request as follows: " + request.raw.decode())
         blank_line = b"\r\n"
         return b"".join([response_line, response_headers, blank_line, response_body])
 
     def handle_POST(self, request):
         print(request.body)
 
-        if request.body == None:
+        if request.body is None:
             response_line = self.response_line(status_code=400)
+            with open("log.txt", "a") as log:
+                log.write("Request or response not ok: " + response_line.decode() + " | request as follows: " + request.raw.decode())
         else:
             try:
                 with open("messages.txt", "a") as f:
@@ -95,6 +100,8 @@ class HTTPServer(TCPServer):
             except Exception as e:
                 print(e)
                 response_line = self.response_line(status_code=500)
+                with open("log.txt", "a") as log:
+                    log.write("Request or response not ok: " + response_line.decode() + " | request as follows from " + request.origin.decode() + ": " + request + "| server encountered the following issue fulfilling this request: " + repr(e))
 
 
         response_headers = self.response_headers()
@@ -123,11 +130,13 @@ class HTTPServer(TCPServer):
 
 class HTTPRequest:
     def __init__(self, data):
+        self.raw = data
         self.method = None
         self.uri = None
         self.http_version = "1.1"
         self.body = None
         self.parse(data)
+        self.origin = None
 
     def parse(self, data):
         self.body = data.split(b"\r\n\r\n")[1]
@@ -142,6 +151,14 @@ class HTTPRequest:
 
         if len(words) > 2:
             self.http_version = words[2]
+
+        try:
+            self.origin = list(filter(lambda x: b"Origin" in x, lines))
+            print(self.origin)
+            self.origin = self.origin[0].split(":")[1]
+        except ValueError and IndexError:
+            pass
+
 
 
 
