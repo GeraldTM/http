@@ -14,6 +14,12 @@ public class TCPServer {
   private InetAddress addr;
   public int port;
 
+  /**
+   * TCP Server class:
+   * call {@code TCPServer.start();} to begin listening
+   * @param host hostname of the server
+   * @param port port to listen on
+   */
   public TCPServer(String host, int port) {
     this.host = host;
     this.port = port;
@@ -34,6 +40,10 @@ public class TCPServer {
     }
   }
 
+  /**
+   * TCP Server class with host {@value "127.0.0.1"} and port {@value 8888}:
+   * call {@code TCPServer.start();} to begin listening
+   */
   public TCPServer() {
     this("127.0.0.1", 8888);
   }
@@ -41,7 +51,7 @@ public class TCPServer {
   public void start() throws IOException {
     try {
       System.out.println("listening at " + host + ":" + port);
-      clientSocket = serverSocket.accept();
+      clientSocket = serverSocket.accept(); // Connect to client
     } catch (Exception e) {
       System.err.println(
         "The Server encountered an error while listening at " +
@@ -53,13 +63,16 @@ public class TCPServer {
       );
       System.exit(1);
     }
+
     out = new PrintWriter(clientSocket.getOutputStream(), true);
     in = new BufferedReader(
       new InputStreamReader(clientSocket.getInputStream())
     );
+
     String data;
-    while ((data = in.readLine()) != null) {
-      out.println(handleRequest(data));
+    while ((data = in.readLine()) != null) { //Loop while client is connected
+      String response = handleRequest(data);
+      out.println(response);
     }
     System.out.println("client disconnected...shutting down");
   }
