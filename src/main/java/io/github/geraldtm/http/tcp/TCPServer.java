@@ -1,0 +1,71 @@
+package io.github.geraldtm.http.tcp;
+
+import java.io.*;
+import java.net.*;
+
+public class TCPServer {
+
+  private ServerSocket serverSocket;
+  private Socket clientSocket;
+  private PrintWriter out;
+  private BufferedReader in;
+
+  public String host;
+  private InetAddress addr;
+  public int port;
+
+  public TCPServer(String host, int port) {
+    this.host = host;
+    this.port = port;
+    try {
+      addr = InetAddress.getByName(host);
+      serverSocket = new ServerSocket(port, 1, addr);
+      System.out.println("socket created at " + host + ":" + port);
+    } catch (Exception e) {
+      System.err.println(
+        "The Server encountered an error while initializing the server socket at " +
+        host +
+        ":" +
+        port +
+        "\n" +
+        e
+      );
+      System.exit(1);
+    }
+  }
+
+  public TCPServer() {
+    this("127.0.0.1", 8888);
+  }
+
+  public void start() throws IOException {
+    try {
+      System.out.println("listening at " + host + ":" + port);
+      clientSocket = serverSocket.accept();
+    } catch (Exception e) {
+      System.err.println(
+        "The Server encountered an error while listening at " +
+        host +
+        ":" +
+        port +
+        "\n" +
+        e
+      );
+      System.exit(1);
+    }
+    out = new PrintWriter(clientSocket.getOutputStream(), true);
+    in = new BufferedReader(
+      new InputStreamReader(clientSocket.getInputStream())
+    );
+    String data;
+    while ((data = in.readLine()) != null) {
+      out.println(handleRequest(data));
+    }
+    System.out.println("client disconnected...shutting down");
+  }
+
+  public String handleRequest(String data) {
+    System.out.println(data);
+    return "recieved packet: " + data;
+  }
+}
