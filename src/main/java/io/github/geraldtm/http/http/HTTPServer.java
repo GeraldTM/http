@@ -1,15 +1,23 @@
 package io.github.geraldtm.http.http;
 
+import io.github.geraldtm.http.http.requests.HTTPRequest;
+import io.github.geraldtm.http.http.requests.handlers.HTTP501Handler;
+import io.github.geraldtm.http.http.requests.handlers.HTTPHandler;
 import io.github.geraldtm.http.tcp.TCPServer;
+import java.security.InvalidParameterException;
 
 public class HTTPServer extends TCPServer {
 
+  String[] headers = { "Server:Custom GTM", "Content-Type:text/html" };
+  String version = "HTTP/1.1";
+
   public HTTPServer(String host, int port) {
     super(host, port);
+    HTTPHandler.initialize(headers, version);
   }
 
   public HTTPServer() {
-    super();
+    this("127.0.0.1", 8888);
   }
 
   @Override
@@ -22,8 +30,16 @@ public class HTTPServer extends TCPServer {
     );
     HTTPRequest request = new HTTPRequest(data);
     if (request.getRaw() != null) {
-      System.out.println(request.getMethod());
+      String response = new HTTP501Handler().handle(request);
+      System.out.print(response.toCharArray());
+      return response;
+    } else {
+      throw new InvalidParameterException(
+        "Invalid HTTP request recieved from " +
+        addr.toString().replace("/", "") +
+        " as follows: \r\n" +
+        data
+      );
     }
-    return "resp";
   }
 }

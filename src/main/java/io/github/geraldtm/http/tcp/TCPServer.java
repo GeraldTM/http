@@ -76,9 +76,12 @@ public class TCPServer {
       "got client connection from: " +
       clientSocket.getRemoteSocketAddress().toString().replace("/", "")
     );
-    while (Optional.of(in.read(data)).isPresent()) { //Loop while client is connected
+    while (
+      Optional.of(in.read(data)).isPresent() && clientSocket.isConnected()
+    ) { //Loop while client is connected
       String response = handleRequest(String.valueOf(data));
-      out.print(response);
+      out.println(response.toCharArray());
+      data = new char[1024];
     }
     System.out.println("client disconnected...shutting down");
   }

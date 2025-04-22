@@ -1,4 +1,4 @@
-package io.github.geraldtm.http.http;
+package io.github.geraldtm.http.http.requests;
 
 import java.util.ArrayList;
 import java.util.List;
