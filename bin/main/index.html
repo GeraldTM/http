@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+</head>
+<body>
+<a href="test.html">Test</a>
+<form method="post" action="index.html" id="form">
+    <label for="msg">Send a message!</label>
+    <input type="text" id="msg" name="message"><br>
+    <input type="button" value="Send" onclick="submitFormAjax();">
+</form>
+<script>
+    function submitFormAjax() {
+
+         var data = document.getElementById('msg').value + '\r\n';
+         var xhr = new XMLHttpRequest();
+         xhr.open("POST", "");
+         xhr.send(data);
+         xhr.onload = function() {
+            alert("Sent");
+         };
+         document.getElementById('msg').value = ""
+         return false;
+
+      }
+</script>
+</body>
+</html>

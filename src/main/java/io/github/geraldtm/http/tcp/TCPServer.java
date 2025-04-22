@@ -2,6 +2,8 @@ package io.github.geraldtm.http.tcp;
 
 import java.io.*;
 import java.net.*;
+import java.nio.CharBuffer;
+import java.util.Optional;
 
 public class TCPServer {
 
@@ -11,7 +13,7 @@ public class TCPServer {
   private BufferedReader in;
 
   public String host;
-  private InetAddress addr;
+  public InetAddress addr;
   public int port;
 
   /**
@@ -33,9 +35,9 @@ public class TCPServer {
         host +
         ":" +
         port +
-        "\n" +
-        e
+        "\n"
       );
+      e.printStackTrace();
       System.exit(1);
     }
   }
@@ -58,9 +60,9 @@ public class TCPServer {
         host +
         ":" +
         port +
-        "\n" +
-        e
+        "\n"
       );
+      e.printStackTrace();
       System.exit(1);
     }
 
@@ -69,10 +71,14 @@ public class TCPServer {
       new InputStreamReader(clientSocket.getInputStream())
     );
 
-    String data;
-    while ((data = in.readLine()) != null) { //Loop while client is connected
-      String response = handleRequest(data);
-      out.println(response);
+    char[] data = new char[1024];
+    System.out.println(
+      "got client connection from: " +
+      clientSocket.getRemoteSocketAddress().toString().replace("/", "")
+    );
+    while (Optional.of(in.read(data)).isPresent()) { //Loop while client is connected
+      String response = handleRequest(String.valueOf(data));
+      out.print(response);
     }
     System.out.println("client disconnected...shutting down");
   }

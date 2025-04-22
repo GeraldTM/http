@@ -70,11 +70,11 @@ goto fail
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\lib\http-1.0-SNAPSHOT.jar
+set CLASSPATH=%APP_HOME%\lib\http-0.0.1.jar;%APP_HOME%\lib\json-20250107.jar
 
 
 @rem Execute http
-"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %HTTP_OPTS%  -classpath "%CLASSPATH%" io.github.geraldtm.Server %*
+"%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %HTTP_OPTS%  -classpath "%CLASSPATH%" io.github.geraldtm.http.Server %*
 
 :end
 @rem End local scope for the variables with windows NT shell
