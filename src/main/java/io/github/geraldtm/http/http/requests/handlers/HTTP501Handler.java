@@ -13,6 +13,13 @@ public class HTTP501Handler extends HTTPHandler {
       "<h1> 501 Not Implemented </h1> <br> <p> This site has not implemented a response to " +
       request.getMethod() +
       " requests </p>";
-    return responseLine + responseHeaders + blankLine + responseBody;
+    return (
+      responseLine +
+      responseHeaders +
+      blankLine +
+      responseBody +
+      blankLine +
+      blankLine
+    );
   }
 }

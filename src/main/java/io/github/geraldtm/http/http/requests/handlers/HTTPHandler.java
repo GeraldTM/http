@@ -25,8 +25,9 @@ public abstract class HTTPHandler {
     for (String header : headers) {
       if (HTTPHandler.headers == null) {
         HTTPHandler.headers = header + "\r\n";
+      } else {
+        HTTPHandler.headers += header + "\r\n";
       }
-      HTTPHandler.headers += header + "\r\n";
     }
     HTTPHandler.HTTPVersion = HTTPVersion;
     isInit = true;

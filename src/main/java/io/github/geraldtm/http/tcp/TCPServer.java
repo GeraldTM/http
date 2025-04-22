@@ -1,5 +1,6 @@
 package io.github.geraldtm.http.tcp;
 
+import io.github.geraldtm.http.Server;
 import java.io.*;
 import java.net.*;
 import java.nio.CharBuffer;
@@ -27,8 +28,8 @@ public class TCPServer {
     this.port = port;
     try {
       addr = InetAddress.getByName(host);
-      serverSocket = new ServerSocket(port, 1, addr);
-      System.out.println("socket created at " + host + ":" + port);
+      serverSocket = new ServerSocket(port, 5, addr);
+      System.out.println("listening at " + host + ":" + port);
     } catch (Exception e) {
       System.err.println(
         "The Server encountered an error while initializing the server socket at " +
@@ -51,39 +52,36 @@ public class TCPServer {
   }
 
   public void start() throws IOException {
-    try {
-      System.out.println("listening at " + host + ":" + port);
-      clientSocket = serverSocket.accept(); // Connect to client
-    } catch (Exception e) {
-      System.err.println(
-        "The Server encountered an error while listening at " +
-        host +
-        ":" +
-        port +
-        "\n"
+    while (true) { //Loop while client is connected
+      try {
+        clientSocket = serverSocket.accept(); // Connect to client
+      } catch (Exception e) {
+        System.err.println(
+          "The Server encountered an error while listening at " +
+          host +
+          ":" +
+          port +
+          "\n"
+        );
+        e.printStackTrace();
+        System.exit(1);
+      }
+
+      out = new PrintWriter(clientSocket.getOutputStream(), true);
+      in = new BufferedReader(
+        new InputStreamReader(clientSocket.getInputStream())
       );
-      e.printStackTrace();
-      System.exit(1);
-    }
 
-    out = new PrintWriter(clientSocket.getOutputStream(), true);
-    in = new BufferedReader(
-      new InputStreamReader(clientSocket.getInputStream())
-    );
-
-    char[] data = new char[1024];
-    System.out.println(
-      "got client connection from: " +
-      clientSocket.getRemoteSocketAddress().toString().replace("/", "")
-    );
-    while (
-      Optional.of(in.read(data)).isPresent() && clientSocket.isConnected()
-    ) { //Loop while client is connected
+      char[] data = new char[1024];
+      System.out.println(
+        "got client connection from: " +
+        clientSocket.getRemoteSocketAddress().toString().replace("/", "")
+      );
+      in.read(data);
       String response = handleRequest(String.valueOf(data));
       out.println(response.toCharArray());
-      data = new char[1024];
+      clientSocket.close();
     }
-    System.out.println("client disconnected...shutting down");
   }
 
   public String handleRequest(String data) {
