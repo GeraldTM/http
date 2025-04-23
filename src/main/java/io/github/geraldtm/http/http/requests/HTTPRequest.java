@@ -1,10 +1,5 @@
 package io.github.geraldtm.http.http.requests;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Spliterator;
-import javax.print.attribute.standard.Media;
-
 public class HTTPRequest {
 
   private String raw;

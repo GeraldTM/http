@@ -30,7 +30,25 @@ public class HTTPServer extends TCPServer {
     );
     HTTPRequest request = new HTTPRequest(data);
     if (request.getRaw() != null) {
-      String response = new HTTP501Handler().handle(request);
+      String className =
+        "io.github.geraldtm.http.http.requests.handlers.HTTP" +
+        request.getMethod() +
+        "Handler";
+      System.out.println(className);
+      Class<?> handlerClass;
+      HTTPHandler handler;
+      try {
+        handlerClass = Class.forName(className);
+        if (HTTPHandler.class.isAssignableFrom(handlerClass)) {
+          handler = (HTTPHandler) handlerClass.getConstructor().newInstance();
+        } else {
+          handler = new HTTP501Handler();
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        handler = new HTTP501Handler();
+      }
+      String response = handler.handle(request);
       System.out.print(response.toCharArray());
       return response;
     } else {
