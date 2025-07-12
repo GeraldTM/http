@@ -1,10 +1,7 @@
 package io.github.geraldtm.http.tcp;
 
-import io.github.geraldtm.http.Server;
 import java.io.*;
 import java.net.*;
-import java.nio.CharBuffer;
-import java.util.Optional;
 
 public class TCPServer {
 

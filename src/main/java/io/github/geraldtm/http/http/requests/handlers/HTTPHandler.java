@@ -34,8 +34,14 @@ public abstract class HTTPHandler {
   }
 
   public final String handle(HTTPRequest data) {
+    String response;
     if (isInit) {
-      return handleRequest(data);
+      try {
+        response = handleRequest(data);
+      } catch (Exception e) {
+        response = new HTTP500Handler().handleRequest(data);
+      }
+      return response;
     } else {
       throw new IllegalStateException(
         "HTTPHandler was not initialized. HTTPHandler.initialize() was never called"

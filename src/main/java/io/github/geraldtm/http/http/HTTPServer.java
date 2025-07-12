@@ -1,6 +1,7 @@
 package io.github.geraldtm.http.http;
 
 import io.github.geraldtm.http.http.requests.HTTPRequest;
+import io.github.geraldtm.http.http.requests.handlers.HTTP401Handler;
 import io.github.geraldtm.http.http.requests.handlers.HTTP501Handler;
 import io.github.geraldtm.http.http.requests.handlers.HTTPHandler;
 import io.github.geraldtm.http.tcp.TCPServer;
@@ -29,7 +30,8 @@ public class HTTPServer extends TCPServer {
       data
     );
     HTTPRequest request = new HTTPRequest(data);
-    if (request.getRaw() != null) {
+    String response;
+    try {
       String className =
         "io.github.geraldtm.http.http.requests.handlers.HTTP" +
         request.getMethod() +
@@ -48,16 +50,18 @@ public class HTTPServer extends TCPServer {
         e.printStackTrace();
         handler = new HTTP501Handler();
       }
-      String response = handler.handle(request);
+      response = handler.handle(request);
       System.out.print(response.toCharArray());
-      return response;
-    } else {
-      throw new InvalidParameterException(
+    } catch (Exception e) {
+      new InvalidParameterException(
         "Invalid HTTP request recieved from " +
         addr.toString().replace("/", "") +
         " as follows: \r\n" +
         data
-      );
+      ).printStackTrace();
+      e.printStackTrace();
+      response = new HTTP401Handler().handle(request);
     }
+    return response;
   }
 }
